@@ -1,3 +1,4 @@
+.env
 /database/pdfs/
 /database/pdfs_bk/
 /database/payment/

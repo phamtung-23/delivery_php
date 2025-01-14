@@ -1,9 +1,10 @@
 <?php
 // sendTelegram.php
+require_once '/helper/general.php'; // Autoload required for phpdotenv
 
 // Hàm gửi tin nhắn đến Telegram
 function sendTelegramMessage($message, $chatId) {
-    $telegramBotToken = '6200192705:AAEiGy7e2hhCeF7LNwhO2gtmRil24pgIA8g'; // Thay đổi thành token của bot Telegram của bạn
+    $telegramBotToken = getValueEnv('TELEGRAM_BOT_TOKEN'); // Thay đổi thành token của bot Telegram của bạn
     
     $url = "https://api.telegram.org/bot$telegramBotToken/sendMessage";
     $data = [

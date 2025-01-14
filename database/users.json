@@ -1,11 +1,20 @@
 [
     {
         "id": "6783773fdbb25",
-        "fullname": "PHạM THANH TùNG",
-        "email": "ptung23082001@gmail.com",
+        "fullname": "Phạm Tùng Admin",
+        "email": "admin@gmail.com",
         "password": "$2y$10$TyXgPJzjCZvlRoQ9\/CaNMOAu5Jua9uBbO7pm\/OpeDLth0\/jUgZSjq",
         "phone": "0359663439",
         "role": "admin",
+        "idTelegram": "152354e45"
+    },
+    {
+        "id": "6783773fdbb26",
+        "fullname": "Tùng Phạm Shipper",
+        "email": "shipper@gmail.com",
+        "password": "$2y$10$TyXgPJzjCZvlRoQ9\/CaNMOAu5Jua9uBbO7pm\/OpeDLth0\/jUgZSjq",
+        "phone": "0359663439",
+        "role": "shipper",
         "idTelegram": "152354e45"
     }
 ]

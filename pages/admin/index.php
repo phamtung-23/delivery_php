@@ -3,7 +3,7 @@ session_start();
 
 // Check if the user is logged in; if not, redirect to login
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
-    echo "<script>alert('Bạn chưa đăng nhập! Vui lòng đăng nhập lại.'); window.location.href = '../index.php';</script>";
+    echo "<script>alert('Bạn chưa đăng nhập! Vui lòng đăng nhập lại.'); window.location.href = '../../index.php';</script>";
     exit();
 }
 
@@ -68,49 +68,82 @@ $userEmail = $_SESSION['user_id']; // operator_email matches user_id
             </div>
         </div>
         <div class="container">
-            <table id="adminTable" class="table">
-                <thead class="table-light">
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">First</th>
-                        <th scope="col">Last</th>
-                        <th scope="col">Handle</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <th scope="row">1</th>
-                        <td>Mark</td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">2</th>
-                        <td>Jacob</td>
-                        <td>Thornton</td>
-                        <td>@fat</td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="table-responsive">
+                <table id="adminTable" class="table">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Item name</th>
+                            <th scope="col">Weight (kg)</th>
+                            <th scope="col">Customer Name</th>
+                            <th scope="col">Address</th>
+                            <th scope="col">Delivery Person</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">1</th>
+                            <td>Mark</td>
+                            <td>2</td>
+                            <td>Thornton</td>
+                            <td>@mdo, abc, x</td>
+                            <td>John</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">2</th>
+                            <td>Jacob</td>
+                            <td>2</td>
+                            <td>Thornton</td>
+                            <td>@mdo, abc, x</td>
+                            <td>John</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </main>
 
+    <footer id="sticky-footer" class="flex-shrink-0 py-2 bg-dark text-white-50">
+        <div class="container text-center">
+            <small>© 2025 Phần mềm soffice phát triển bởi Hienlm 0988838487</small>
+        </div>
+    </footer>
     <script>
         $(document).ready(function() {
-            $('#adminTable').DataTable({
-                "paging": true, // Enable pagination
-                "searching": true, // Enable searching
-                "ordering": true, // Enable column sorting
-                "info": true, // Show table info (e.g., "Showing 1 to 10 of 50 entries")
-                "language": {
-                    "search": "Search:",
-                    "paginate": {
-                        "next": "Next",
-                        "previous": "Previous"
+            if (window.innerWidth <= 550) {
+                $('#adminTable').DataTable({
+                    scrollY: true, // Set the vertical scrolling height
+                    scrollX: true, // Set the vertical scrolling height
+                    scrollCollapse: true, // Allow the table to reduce height if less content
+                    paging: true, // Enable pagination
+                    searching: true, // Enable searching
+                    ordering: true, // Enable column sorting
+                    info: true, // Show table info
+                    language: {
+                        search: "Search:",
+                        paginate: {
+                            next: "Next",
+                            previous: "Previous"
+                        }
                     }
-                }
-            });
+                });
+            } else {
+                $('#adminTable').DataTable({
+                    paging: true, // Enable pagination
+                    searching: true, // Enable searching
+                    ordering: true, // Enable column sorting
+                    info: true, // Show table info
+                    language: {
+                        search: "Search:",
+                        paginate: {
+                            next: "Next",
+                            previous: "Previous"
+                        }
+                    }
+                });
+            }
         });
+                
     </script>
 
 </body>
