@@ -1,0 +1,17 @@
+{
+    "idOrder": "order_678ca853eff73",
+    "itemName": "Watermelon 2",
+    "customerName": "t\u01b0ersdf",
+    "weight": "12",
+    "deliveryPersonId": "6783773fdbb26",
+    "address": "a\u0301dfasdf",
+    "status": "waiting_shipper_accept",
+    "history": [
+        {
+            "status": "created",
+            "createdAt": "2025-01-19 08:22:59"
+        }
+    ],
+    "createdAt": "2025-01-19 08:22:59",
+    "updatedAt": "2025-01-19 08:22:59"
+}
