@@ -4,24 +4,14 @@ session_start();
 include('../../helper/general.php');
 
 // Check if the user is logged in; if not, redirect to login
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'shipper') {
   echo "<script>alert('Bạn chưa đăng nhập! Vui lòng đăng nhập lại.'); window.location.href = '../../index.php';</script>";
   exit();
 }
 
 // Retrieve full name and email from session
 $fullName = $_SESSION['full_name'];
-$userEmail = $_SESSION['user_id']; // operator_email matches user_id
-
-$currentYear = date('Y');
-$orderId = $_GET['id'];
-$orderRes = getDataFromJson("../../database/orders/{$currentYear}/{$orderId}.json");
-if ($orderRes['status'] === 'success') {
-  $orderData = $orderRes['data'];
-} else {
-  echo "<script>alert('Error reading order data!');</script>";
-  exit();
-}
+$userId = $_SESSION['user_id']; // operator_email matches user_id
 
 $resData = getDataFromJson('../../database/users.json');
 if ($resData['status'] === 'success') {
@@ -31,9 +21,13 @@ if ($resData['status'] === 'success') {
   exit();
 }
 
-$shipperData = array_filter($users, function ($user) use ($orderData) {
-  return $user['id'] === $orderData['deliveryPersonId'];
-});
+foreach ($users as $user) {
+  if ($user['id'] === $userId) {
+    $shipperData = $user;
+    break;
+  }
+}
+
 
 echo "<script>";
 echo "const shipperData = " . json_encode(array_values($shipperData)) . ";";
@@ -65,7 +59,7 @@ echo "</script>";
     <nav class="navbar navbar-expand-md bg-body-tertiary">
       <div class="container-fluid">
         <a class="navbar-brand" href="index.php">
-          <h2>Dashboard</h2>
+          <h2>Delivery</h2>
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarScroll" aria-controls="navbarScroll" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
@@ -73,10 +67,10 @@ echo "</script>";
         <div class="collapse navbar-collapse" id="navbarScroll">
           <ul class="navbar-nav me-auto my-2 my-lg-0">
             <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="index.php">Orders</a>
+              <a class="nav-link" aria-current="page" href="index.php">Orders</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" aria-current="page" href="shipper.php">Shippers</a>
+              <a class="nav-link active" aria-current="page" href="profile.php">Profile</a>
             </li>
           </ul>
           <form action="../../logout.php" class="d-flex" role="search">
@@ -86,62 +80,44 @@ echo "</script>";
       </div>
     </nav>
     <div class="container pt-3">
-      <h2>Order Detail</h2>
+      <h2>Profile</h2>
       <p>Welcome, <?php echo $fullName; ?>!</p>
     </div>
     <div class="container" style="padding-bottom: 100px; overflow: auto;">
       <div class="row">
         <form id="formSubmit" class="row g-3 needs-validation" novalidate>
           <div class="col-md-6">
-            <label for="itemName" class="form-label">Item Name</label>
-            <input type="text" class="form-control" id="itemName" name="itemName" required value="<?php echo $orderData['itemName']; ?>" disabled>
+            <label for="fullname" class="form-label">Name</label>
+            <input type="text" class="form-control" id="fullname" name="fullname" required value="<?php echo $shipperData['fullname']; ?>" >
             <div class="invalid-feedback">
-              Please provide a valid item name.
+              Please provide a valid Full name.
             </div>
           </div>
           <div class="col-md-6">
-            <label for="customerName" class="form-label">Customer Name</label>
-            <input type="text" class="form-control" id="customerName" name="customerName" required value="<?php echo $orderData['customerName']; ?>" disabled>
+            <label for="email" class="form-label">Email</label>
+            <input type="text" class="form-control" id="email" name="email" required value="<?php echo $shipperData['email']; ?>" >
             <div class="invalid-feedback">
-              Please provide a valid customer name.
+              Please provide a valid email.
             </div>
           </div>
           <div class="col-md-6">
-            <label for="weight" class="form-label">Weight</label>
-            <div class="input-group has-validation">
-              <span class="input-group-text" id="inputGroupPrepend">kg</span>
-              <input type="number" class="form-control" id="weight" name="weight" aria-describedby="inputGroupPrepend" required value="<?php echo $orderData['weight']; ?>" disabled>
-              <div class="invalid-feedback">
-                Please provide a valid weight.
-              </div>
+            <label for="phone" class="form-label">Phone</label>
+            <input type="text" class="form-control" id="phone" name="phone" required value="<?php echo $shipperData['phone']; ?>" >
+            <div class="invalid-feedback">
+              Please provide a valid phone.
             </div>
           </div>
           <div class="col-md-6">
-            <label for="validationCustom04" class="form-label">Assign Delivery Person</label>
-
-            <?php
-            foreach ($shipperData as $shipper) {
-              echo "<input type='text' class='form-control'  aria-describedby='inputGroupPrepend' required value='{$shipper['fullname']} - {$shipper['email']}' disabled>";
-            }
-            ?>
-
+            <label for="idTelegram" class="form-label">Telegram ID</label>
+            <input type="text" class="form-control" id="idTelegram" name="idTelegram" required value="<?php echo $shipperData['idTelegram']; ?>" >
             <div class="invalid-feedback">
-              Please select a valid delivery person.
-            </div>
-          </div>
-          <div class="col-md-6">
-            <label for="address" class="form-label">Address</label>
-            <textarea class="form-control" id="address" placeholder="Required enter address" required disabled>
-              <?php echo $orderData['address']; ?>
-            </textarea>
-            <div class="invalid-feedback">
-              Please enter a valid address.
+              Please provide a valid Telegram ID.
             </div>
           </div>
 
-          <!-- <div class="col-12 d-flex justify-content-end">
-            <button class="btn btn-primary btn-create-order" type="submit">Create order</button>
-          </div> -->
+          <div class="col-12 d-flex justify-content-end">
+            <button class="btn btn-primary btn-update-profile" type="submit">Update</button>
+          </div>
         </form>
       </div>
     </div>
@@ -210,36 +186,37 @@ echo "</script>";
 
       // Create order
       const formSubmit = document.getElementById('formSubmit');
-      $('.btn-create-order').click(function(e) {
+      $('.btn-update-profile').click(function(e) {
         if (!formSubmit.checkValidity()) {
           event.preventDefault();
           event.stopPropagation();
           formSubmit.classList.add("was-validated");
         } else {
           e.preventDefault();
-          const itemName = $('#itemName').val();
-          const customerName = $('#customerName').val();
-          const weight = $('#weight').val();
-          const deliveryPerson = $('#validationCustom04').val();
-          const address = $('#address').val();
+          const fullname = $('#fullname').val();
+          const email = $('#email').val();
+          const phone = $('#phone').val();
+          const idTelegram = $('#idTelegram').val();
 
-          if (!itemName || !customerName || !weight || !deliveryPerson || !address) {
+          if (!fullname || !email || !phone || !idTelegram) {
             alert('Please fill in all fields!');
             return;
           }
 
-          const orderData = {
-            itemName,
-            customerName,
-            weight,
-            deliveryPerson,
-            address
+          const userData = {
+            id: '<?php echo $userId; ?>',
+            fullname: fullname,
+            email: email,
+            phone: phone,
+            idTelegram: idTelegram
           };
+
+          console.log(userData);
 
           // add alert processing
           Swal.fire({
             title: 'Processing...',
-            text: 'Creating order...',
+            text: 'Updating profile...',
             allowOutsideClick: false,
             showConfirmButton: false,
             willOpen: () => {
@@ -250,52 +227,30 @@ echo "</script>";
           // console.log(orderData);
 
           $.ajax({
-            url: 'backend/handle-submit.php',
+            url: 'backend/handle-update-profile.php',
             type: 'POST',
-            data: orderData,
+            data: userData,
             success: async function(response) {
               // console.log("response: ", response);
               if (response.success === true) {
                 // send message to telegram
-                const shipperInfo = getUserInfoByEmail(response.data.deliveryPersonId);
-                let telegramMessage = '';
-
-                telegramMessage = `**New Order Created!**\n` +
-                  `Order ID: ${response.data.idOrder}\n` +
-                  `Item Name: ${response.data.itemName}\n` +
-                  `Weight: ${response.data.weight} kg\n` +
-                  `Customer: ${response.data.customerName}\n` +
-                  `Address: ${response.data.address}\n` +
-                  `Created At: ${response.data.createdAt}\n`;
-
-                // Gửi tin nhắn đến Telegram
-                await fetch('../../sendTelegram.php', {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json'
-                  },
-                  body: JSON.stringify({
-                    message: telegramMessage,
-                    id_telegram: shipperInfo.idTelegram // Truyền thêm thông tin operator_phone
-                  })
-                });
                 Swal.fire({
                   position: "center",
                   icon: "success",
-                  text: "Create order successfully!",
+                  text: "Update profile successfully!",
                   showConfirmButton: false,
                   timer: 2000
                 }).then(() => {
-                  window.location.href = 'index.php';
+                  location.reload();
                 });
               } else {
                 Swal.close();
-                alert('Error creating order!');
+                alert(response.message);
               }
             },
             error: function() {
               Swal.close();
-              alert('Error creating order!');
+              alert('Error updating profile!');
             }
           });
         }

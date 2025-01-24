@@ -55,7 +55,7 @@ echo "</script>";
     <nav class="navbar navbar-expand-md bg-body-tertiary">
       <div class="container-fluid">
         <a class="navbar-brand" href="index.php">
-          <h2>Delivery</h2>
+          <h2>Dashboard</h2>
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarScroll" aria-controls="navbarScroll" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
@@ -66,7 +66,7 @@ echo "</script>";
               <a class="nav-link active" aria-current="page" href="index.php">Orders</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" aria-current="page" href="#">Shippers</a>
+              <a class="nav-link" aria-current="page" href="shipper.php">Shippers</a>
             </li>
           </ul>
           <form action="../../logout.php" class="d-flex" role="search">

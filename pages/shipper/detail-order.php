@@ -4,7 +4,7 @@ session_start();
 include('../../helper/general.php');
 
 // Check if the user is logged in; if not, redirect to login
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'shipper') {
   echo "<script>alert('Bạn chưa đăng nhập! Vui lòng đăng nhập lại.'); window.location.href = '../../index.php';</script>";
   exit();
 }
@@ -65,7 +65,7 @@ echo "</script>";
     <nav class="navbar navbar-expand-md bg-body-tertiary">
       <div class="container-fluid">
         <a class="navbar-brand" href="index.php">
-          <h2>Dashboard</h2>
+          <h2>Delivery</h2>
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarScroll" aria-controls="navbarScroll" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
@@ -76,7 +76,7 @@ echo "</script>";
               <a class="nav-link active" aria-current="page" href="index.php">Orders</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" aria-current="page" href="shipper.php">Shippers</a>
+              <a class="nav-link" aria-current="page" href="profile.php">Profile</a>
             </li>
           </ul>
           <form action="../../logout.php" class="d-flex" role="search">
@@ -139,9 +139,10 @@ echo "</script>";
             </div>
           </div>
 
-          <!-- <div class="col-12 d-flex justify-content-end">
-            <button class="btn btn-primary btn-create-order" type="submit">Create order</button>
-          </div> -->
+          <div class="col-12 d-flex justify-content-end gap-2">
+            <button class="btn btn-danger btn-order-cancel" type="submit">Cancel</button>
+            <button class="btn btn-success btn-order-accept" type="submit">Accept</button>
+          </div>
         </form>
       </div>
     </div>
@@ -210,7 +211,7 @@ echo "</script>";
 
       // Create order
       const formSubmit = document.getElementById('formSubmit');
-      $('.btn-create-order').click(function(e) {
+      $('.btn-order-accept').click(function(e) {
         if (!formSubmit.checkValidity()) {
           event.preventDefault();
           event.stopPropagation();
