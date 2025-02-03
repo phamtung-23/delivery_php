@@ -37,6 +37,7 @@ $shipperData = array_filter($users, function ($user) use ($orderData) {
 
 echo "<script>";
 echo "const shipperData = " . json_encode(array_values($shipperData)) . ";";
+echo "const orderData = " . json_encode($orderData) . ";";
 echo "</script>";
 
 
@@ -58,6 +59,8 @@ echo "</script>";
   <script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@goongmaps/goong-js@1.0.9/dist/goong-js.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@goongmaps/goong-js@1.0.9/dist/goong-js.css" rel="stylesheet" />
 </head>
 
 <body>
@@ -90,6 +93,11 @@ echo "</script>";
       <p>Welcome, <?php echo $fullName; ?>!</p>
     </div>
     <div class="container" style="padding-bottom: 100px; overflow: auto;">
+      <div class="row">
+        <div class="col-md-12">
+          <div><b>Status:</b> <span class="<?php echo getColorByStatus($orderData['status']); ?>"><?php echo getStatusName($orderData['status']) ?></span></div>
+        </div>
+      </div>
       <div class="row">
         <form id="formSubmit" class="row g-3 needs-validation" novalidate>
           <div class="col-md-6">
@@ -130,7 +138,13 @@ echo "</script>";
             </div>
           </div>
           <div class="col-md-6">
-            <label for="address" class="form-label">Address</label>
+            <label for="address" class="form-label">Address (<span class="text-primary">
+                <a href="https://www.google.com/maps/search/?api=1&query=<?php echo $orderData['address']; ?>" target="_blank">
+                  Go to map
+                  <img width="20" src="../../public/images/icon-map.png" />
+                </a>
+              </span>)
+            </label>
             <textarea class="form-control" id="address" placeholder="Required enter address" required disabled>
               <?php echo $orderData['address']; ?>
             </textarea>
@@ -138,6 +152,36 @@ echo "</script>";
               Please enter a valid address.
             </div>
           </div>
+
+          <?php
+          if ($orderData['status'] === 'delivered') {
+            echo "<div class='col-md-6'>";
+            echo "<label for='note' class='form-label'>Note</label>";
+            echo "<input type='text' class='form-control' id='note' name='note' required value='{$orderData['note']}' disabled>";
+            echo "</div>";
+            echo "<div class='col-md-6'>";
+            echo "<label for='images' class='form-label'>Images</label>";
+            echo "<div class='d-flex flex-wrap gap-2'>";
+            foreach ($orderData['images'] as $image) {
+              echo "<a href='../../uploads/{$orderData['idOrder']}/{$image}' target='_blank' style='height: fix-content;'>";
+              echo "<img src='../../uploads/{$orderData['idOrder']}/{$image}' class='img-thumbnail' style='max-width: 100px; max-height: 100px; object-fit: cover;'>";
+              echo "</a>";
+            }
+            echo "</div>";
+            echo "</div>";
+          }
+          ?>
+
+          <?php
+          if ($orderData['status'] === 'shipping') {
+          ?>
+            <div class="col-md-12">
+              <label for="address" class="form-label">Current location of shipper</label>
+              <div id="map" style="height: 400px;"></div>
+            </div>
+          <?php
+          }
+          ?>
 
           <!-- <div class="col-12 d-flex justify-content-end">
             <button class="btn btn-primary btn-create-order" type="submit">Create order</button>
@@ -149,9 +193,71 @@ echo "</script>";
 
   <footer id="sticky-footer" class="flex-shrink-0 py-2 bg-dark text-white-50">
     <div class="container text-center">
-      <small>© 2025 Phần mềm soffice phát triển bởi Hienlm 0988838487</small>
+      <small>© 2025 Phần mềm phát triển bởi Hienlm 0988838487</small>
     </div>
   </footer>
+
+  <script>
+    if (orderData.status == 'shipping') {
+      let intervalId; // Biến để lưu ID của setInterval
+
+      // Initialize Goong map
+      goongjs.accessToken = 'nOBVsYUmcnYdo2WgXUAntf3FscSjtKk7Fa52D7oB';
+      var map = new goongjs.Map({
+        container: 'map',
+        style: 'https://tiles.goong.io/assets/goong_map_web.json',
+        center: [106.398557, 10.1038453], // Initial center coordinates
+        zoom: 15
+      });
+
+
+      var marker = new goongjs.Marker()
+        .setLngLat([106.398557, 10.1038453])
+        .addTo(map);
+
+      // Function to fetch the latest position
+      async function updateMarkerPosition() {
+        try {
+          const response = await fetch(`backend/get_marker_position.php?id=${orderData.idOrder}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          });
+          const data = await response.json();
+
+          if (data.success && data.location) {
+            const {
+              lng,
+              lat
+            } = data.location; // Assuming API returns { location: { lng, lat } }
+            console.log('New position:', lng, lat);
+            marker.setLngLat([lng, lat]); // Update marker position
+            map.flyTo({
+              center: [lng, lat],
+              zoom: 15
+            }); // Optional: center map
+          } else {
+            console.error('Failed to fetch location data:', data.message);
+          }
+        } catch (error) {
+          console.error('Error fetching location:', error);
+        }
+      }
+
+      // Set interval to update position every 3 minutes
+      intervalId = setInterval(updateMarkerPosition, 180000);
+
+      // Initial call
+      updateMarkerPosition();
+
+      // Cleanup interval when leaving the page
+      window.addEventListener('beforeunload', function() {
+        clearInterval(intervalId); // Clear the interval
+      });
+    }
+  </script>
+
   <script>
     $(document).ready(function() {
       if (window.innerWidth <= 550) {

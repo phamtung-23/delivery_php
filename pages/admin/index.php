@@ -82,10 +82,10 @@ $orderList = getAllJsonData("../../database/orders/");
                         <tr>
                             <th scope="col">#</th>
                             <th scope="col">Item name</th>
-                            <th scope="col">Weight (kg)</th>
-                            <th scope="col">Customer Name</th>
-                            <th scope="col">Address</th>
-                            <th scope="col">Delivery Person</th>
+                            <!-- <th scope="col">Weight (kg)</th> -->
+                            <!-- <th scope="col">Customer Name</th> -->
+                            <th style='min-width: 150px;' scope="col">Address</th>
+                            <!-- <th scope="col">Delivery Person</th> -->
                             <th scope="col">Status</th>
                             <th scope="col">Action</th>
                         </tr>
@@ -97,10 +97,10 @@ $orderList = getAllJsonData("../../database/orders/");
                             echo "<tr>";
                             echo "<th scope='row'>" . ($key + 1) . "</th>";
                             echo "<td>" . $order['itemName'] . "</td>";
-                            echo "<td>" . $order['weight'] . "</td>";
-                            echo "<td>" . $order['customerName'] . "</td>";
-                            echo "<td>" . $order['address'] . "</td>";
-                            echo "<td>" . ($shipperInfo['data']['fullname'] ?? '') . "</td>";
+                            // echo "<td>" . $order['weight'] . "</td>";
+                            // echo "<td>" . $order['customerName'] . "</td>";
+                            echo "<td style='min-width: 150px;'>" . $order['address'] . "</td>";
+                            // echo "<td>" . ($shipperInfo['data']['fullname'] ?? '') . "</td>";
                             echo "<td><span class='" . getColorByStatus($order['status']) . "'>" . getStatusName($order['status']) . "</span></td>";
                             echo "<td class='align-middle h-100 d-flex gap-1 justify-content-center align-items-center'>
                                 <button id='btn-detail' onclick='openDetail(\"" . $order['idOrder'] . "\")' type='button' class='btn btn-secondary'><i class='fa-regular fa-eye'></i></button>
@@ -136,7 +136,7 @@ $orderList = getAllJsonData("../../database/orders/");
 
     <footer id="sticky-footer" class="flex-shrink-0 py-2 bg-dark text-white-50">
         <div class="container text-center">
-            <small>© 2025 Phần mềm soffice phát triển bởi Hienlm 0988838487</small>
+            <small>© 2025 Phần mềm phát triển bởi Hienlm 0988838487</small>
         </div>
     </footer>
     <script>

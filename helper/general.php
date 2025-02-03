@@ -259,3 +259,31 @@ function updateUserInfoById($userId, $data, $filePath)
     return ['status' => 'fail'];
   }
 }
+
+
+function updateDataToJson($data, $directory, $fileName)
+{
+  // Ensure the directory exists
+  if (!is_dir($directory)) {
+    mkdir($directory, 0777, true);
+  }
+
+  $filePath = $directory . '/' . $fileName . '.json';
+
+  // Load existing data or initialize a new object
+  $existingData = [];
+  if (file_exists($filePath)) {
+    $fileContent = file_get_contents($filePath);
+    $existingData = json_decode($fileContent, true);
+  }
+
+  // Merge existing data with new data
+  $updatedData = array_merge($existingData, $data);
+
+  // Save data to JSON file
+  if (file_put_contents($filePath, json_encode($updatedData, JSON_PRETTY_PRINT))) {
+    return ['status' => 'success', 'data' => $updatedData];
+  } else {
+    return ['status' => 'fail'];
+  }
+}

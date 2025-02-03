@@ -25,8 +25,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   $data['deliveryPersonId'] = $_POST['deliveryPerson'];
   $data['address'] = $_POST['address'];
   $data['status'] = 'waiting_shipper_accept';
+  $data['createdBy'] = $_SESSION['user_id'];
   $data['history'] = [
     [
+      'userId' => $_SESSION['user_id'],
       'status' => 'created',
       'createdAt' => date('Y-m-d H:i:s')
     ]

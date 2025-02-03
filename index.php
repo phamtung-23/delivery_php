@@ -109,7 +109,7 @@ if (isset($_SESSION['user_id'])) {
                 </div>
             </div>
              <div class="footer">
-                        <p>© 2024 Phần mềm soffice phát triển bởi Hienlm 0988838487</p>
+                        <p>© 2024 Phần mềm phát triển bởi Hienlm 0988838487</p>
                     </div>
         </section>
 
@@ -144,7 +144,7 @@ if (isset($_SESSION['user_id'])) {
                 </div>
             </div>
                   <div class="footer">
-                        <p>© 2024 Phần mềm soffice phát triển bởi Hienlm 0988838487</p>
+                        <p>© 2024 Phần mềm phát triển bởi Hienlm 0988838487</p>
                     </div>
         </section>
 

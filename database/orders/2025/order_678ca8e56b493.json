@@ -5,11 +5,17 @@
     "weight": "12",
     "deliveryPersonId": "6783773fdbb26",
     "address": "fsdfasdfasdf",
-    "status": "waiting_shipper_accept",
+    "status": "shipping",
+    "createdBy": "6783773fdbb25",
     "history": [
         {
             "status": "created",
             "createdAt": "2025-01-19 08:25:25"
+        },
+        {
+            "userId": "6783773fdbb26",
+            "status": "shipping",
+            "createdAt": "2025-01-24 17:15:38"
         }
     ],
     "createdAt": "2025-01-19 08:25:25",

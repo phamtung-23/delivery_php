@@ -138,7 +138,7 @@ echo "</script>";
 
   <footer id="sticky-footer" class="flex-shrink-0 py-2 bg-dark text-white-50">
     <div class="container text-center">
-      <small>© 2025 Phần mềm soffice phát triển bởi Hienlm 0988838487</small>
+      <small>© 2025 Phần mềm phát triển bởi Hienlm 0988838487</small>
     </div>
   </footer>
   <script>

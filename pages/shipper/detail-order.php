@@ -37,6 +37,8 @@ $shipperData = array_filter($users, function ($user) use ($orderData) {
 
 echo "<script>";
 echo "const shipperData = " . json_encode(array_values($shipperData)) . ";";
+echo "const users = " . json_encode(array_values($users)) . ";";
+echo "const orderData = " . json_encode($orderData) . ";";
 echo "</script>";
 
 
@@ -91,6 +93,11 @@ echo "</script>";
     </div>
     <div class="container" style="padding-bottom: 100px; overflow: auto;">
       <div class="row">
+        <div class="col-md-12">
+          <div><b>Status:</b> <span class="<?php echo getColorByStatus($orderData['status']); ?>"><?php echo getStatusName($orderData['status']) ?></span></div>
+        </div>
+      </div>
+      <div class="row">
         <form id="formSubmit" class="row g-3 needs-validation" novalidate>
           <div class="col-md-6">
             <label for="itemName" class="form-label">Item Name</label>
@@ -130,7 +137,13 @@ echo "</script>";
             </div>
           </div>
           <div class="col-md-6">
-            <label for="address" class="form-label">Address</label>
+            <label for="address" class="form-label">Address (<span class="text-primary">
+                <a href="https://www.google.com/maps/search/?api=1&query=<?php echo $orderData['address']; ?>" target="_blank">
+                  Go to map
+                  <img width="20" src="../../public/images/icon-map.png" />
+                </a>
+              </span>)
+            </label>
             <textarea class="form-control" id="address" placeholder="Required enter address" required disabled>
               <?php echo $orderData['address']; ?>
             </textarea>
@@ -139,22 +152,99 @@ echo "</script>";
             </div>
           </div>
 
-          <div class="col-12 d-flex justify-content-end gap-2">
-            <button class="btn btn-danger btn-order-cancel" type="submit">Cancel</button>
-            <button class="btn btn-success btn-order-accept" type="submit">Accept</button>
-          </div>
+          <?php
+          if ($orderData['status'] === 'delivered') {
+            echo "<div class='col-md-6'>";
+            echo "<label for='note' class='form-label'>Note</label>";
+            echo "<input type='text' class='form-control' id='note' name='note' required value='{$orderData['note']}' disabled>";
+            echo "</div>";
+            echo "<div class='col-md-6'>";
+            echo "<label for='images' class='form-label'>Images</label>";
+            echo "<div class='d-flex flex-wrap gap-2'>";
+            foreach ($orderData['images'] as $image) {
+              echo "<a href='../../uploads/{$orderData['idOrder']}/{$image}' target='_blank' style='height: fix-content;'>";
+              echo "<img src='../../uploads/{$orderData['idOrder']}/{$image}' class='img-thumbnail' style='max-width: 100px; max-height: 100px; object-fit: cover;'>";
+              echo "</a>";
+            }
+            echo "</div>";
+            echo "</div>";
+          }
+          ?>
         </form>
+        <div class="col-12 d-flex justify-content-end gap-2 pe-4 pt-3">
+          <?php
+          if ($orderData['status'] === 'waiting_shipper_accept') {
+            echo "<button class='btn btn-danger' data-bs-toggle='modal' data-bs-target='#exampleModal'>Cancel</button>";
+            echo "<button class='btn btn-success btn-order-accept' type='submit'>Accept</button>";
+          } else if ($orderData['status'] === 'shipping') {
+            echo "<button class='btn btn-warning btn-order-delivered' data-bs-toggle='modal' data-bs-target='#deliveredModal' >Confirm delivered</button>";
+          }
+          ?>
+          <!-- <button class="btn btn-danger btn-order-cancel" type="submit">Cancel</button> -->
+          <!-- <button class="btn btn-success btn-order-accept" type="submit">Accept</button> -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalLabel">Confirm</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            Are you sure you want to cancel this order?
+          </div>
+          <div class="modal-footer">
+            <!-- <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">cancel</button> -->
+            <button type="button" class="btn btn-primary btn-order-cancel">Confirm</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="deliveredModal" tabindex="-1" aria-labelledby="deliveredModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="deliveredModalLabel">Confirm Delivered</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-md-12 text-center">
+                <!-- Image Previews Container -->
+                <div id="imagePreviewContainer" class="d-flex flex-wrap gap-2"></div>
+              </div>
+              <div class="col-md-12 mt-3">
+                <label for="imageUpload" class="form-label">Upload Images</label>
+                <input type="file" class="form-control" id="imageUpload" accept="image/*" multiple>
+              </div>
+              <div class="col-md-12 mt-3">
+                <label for="note" class="form-label">Note</label>
+                <input type="text" class="form-control" id="note" name="note" required>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-success btn-confirm-delivered">Submit</button>
+          </div>
+        </div>
       </div>
     </div>
   </main>
 
   <footer id="sticky-footer" class="flex-shrink-0 py-2 bg-dark text-white-50">
     <div class="container text-center">
-      <small>© 2025 Phần mềm soffice phát triển bởi Hienlm 0988838487</small>
+      <small>© 2025 Phần mềm phát triển bởi Hienlm 0988838487</small>
     </div>
   </footer>
   <script>
     $(document).ready(function() {
+      let locationInterval = null;
+
       if (window.innerWidth <= 550) {
         $('#adminTable').DataTable({
           scrollY: true, // Set the vertical scrolling height
@@ -190,8 +280,8 @@ echo "</script>";
 
       // function get information from json file of user by email
       function getUserInfoByEmail(id) {
-        var shipperInfo = shipperData.find(user => user.id === id);
-        return shipperInfo;
+        var user = users.find(user => user.id === id);
+        return user;
       }
 
       // Fetch all the forms we want to apply custom Bootstrap validation styles to
@@ -218,29 +308,11 @@ echo "</script>";
           formSubmit.classList.add("was-validated");
         } else {
           e.preventDefault();
-          const itemName = $('#itemName').val();
-          const customerName = $('#customerName').val();
-          const weight = $('#weight').val();
-          const deliveryPerson = $('#validationCustom04').val();
-          const address = $('#address').val();
-
-          if (!itemName || !customerName || !weight || !deliveryPerson || !address) {
-            alert('Please fill in all fields!');
-            return;
-          }
-
-          const orderData = {
-            itemName,
-            customerName,
-            weight,
-            deliveryPerson,
-            address
-          };
 
           // add alert processing
           Swal.fire({
             title: 'Processing...',
-            text: 'Creating order...',
+            text: 'Accepting order...',
             allowOutsideClick: false,
             showConfirmButton: false,
             willOpen: () => {
@@ -251,17 +323,21 @@ echo "</script>";
           // console.log(orderData);
 
           $.ajax({
-            url: 'backend/handle-submit.php',
+            url: 'backend/handle-accept.php',
             type: 'POST',
-            data: orderData,
+            data: {
+              id: '<?php echo $orderId; ?>'
+            },
             success: async function(response) {
               // console.log("response: ", response);
               if (response.success === true) {
                 // send message to telegram
+                const userShop = getUserInfoByEmail(response.data.createdBy);
                 const shipperInfo = getUserInfoByEmail(response.data.deliveryPersonId);
                 let telegramMessage = '';
 
-                telegramMessage = `**New Order Created!**\n` +
+                telegramMessage = `**The Order Accepted!**\n` +
+                  `Shipper: ${shipperInfo.fullname} - ${shipperInfo.phone}\n` +
                   `Order ID: ${response.data.idOrder}\n` +
                   `Item Name: ${response.data.itemName}\n` +
                   `Weight: ${response.data.weight} kg\n` +
@@ -277,30 +353,268 @@ echo "</script>";
                   },
                   body: JSON.stringify({
                     message: telegramMessage,
-                    id_telegram: shipperInfo.idTelegram // Truyền thêm thông tin operator_phone
+                    id_telegram: userShop.idTelegram // Truyền thêm thông tin operator_phone
                   })
                 });
                 Swal.fire({
                   position: "center",
                   icon: "success",
-                  text: "Create order successfully!",
+                  text: response.message,
                   showConfirmButton: false,
                   timer: 2000
                 }).then(() => {
-                  window.location.href = 'index.php';
+                  // Reload page
+                  location.reload();
                 });
               } else {
                 Swal.close();
-                alert('Error creating order!');
+                alert(response.message);
               }
             },
             error: function() {
               Swal.close();
-              alert('Error creating order!');
+              alert('Error accepting order');
             }
           });
         }
 
+      });
+
+      // Cancel order
+      $('.btn-order-cancel').click(function(e) {
+        e.preventDefault();
+        Swal.fire({
+          title: 'Processing...',
+          text: 'Canceling order...',
+          allowOutsideClick: false,
+          showConfirmButton: false,
+          willOpen: () => {
+            Swal.showLoading();
+          },
+        });
+
+        $.ajax({
+          url: 'backend/handle-cancel.php',
+          type: 'POST',
+          data: {
+            id: '<?php echo $orderId; ?>'
+          },
+          success: async function(response) {
+            if (response.success === true) {
+              // send message to telegram
+              const userShop = getUserInfoByEmail(response.data.createdBy);
+              const shipperInfo = getUserInfoByEmail(response.data.deliveryPersonId);
+              let telegramMessage = '';
+
+              telegramMessage = `**The Order Canceled!**\n` +
+                `Shipper: ${shipperInfo.fullname} - ${shipperInfo.phone}\n` +
+                `Order ID: ${response.data.idOrder}\n` +
+                `Item Name: ${response.data.itemName}\n` +
+                `Weight: ${response.data.weight} kg\n` +
+                `Customer: ${response.data.customerName}\n` +
+                `Address: ${response.data.address}\n` +
+                `Created At: ${response.data.createdAt}\n`;
+
+              // Gửi tin nhắn đến Telegram
+              await fetch('../../sendTelegram.php', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  message: telegramMessage,
+                  id_telegram: userShop.idTelegram // Truyền thêm thông tin operator_phone
+                })
+              });
+              Swal.fire({
+                position: "center",
+                icon: "success",
+                text: response.message,
+                showConfirmButton: false,
+                timer: 2000
+              }).then(() => {
+                // Reload page
+                location.reload();
+              });
+            } else {
+              Swal.close();
+              const modal = bootstrap.Modal.getInstance(document.getElementById('exampleModal'));
+              modal.hide();
+              alert(response.message);
+            }
+          },
+          error: function() {
+            Swal.close();
+            const modal = bootstrap.Modal.getInstance(document.getElementById('exampleModal'));
+            modal.hide();
+            alert('Error canceling order');
+          }
+        });
+      });
+
+      // Confirm delivered
+      $('.btn-confirm-delivered').click(function(e) {
+        e.preventDefault();
+        Swal.fire({
+          title: 'Processing...',
+          text: 'Confirming delivered...',
+          allowOutsideClick: false,
+          showConfirmButton: false,
+          willOpen: () => {
+            Swal.showLoading();
+          },
+        });
+
+        const formData = new FormData();
+        const files = document.getElementById('imageUpload').files;
+        const note = document.getElementById('note').value;
+
+        if (files.length === 0) {
+          Swal.close();
+          alert('Please upload at least one image');
+          return;
+        }
+
+        formData.append('id', '<?php echo $orderId; ?>');
+        formData.append('note', note);
+        Array.from(files).forEach(file => {
+          formData.append('images[]', file);
+        });
+
+        $.ajax({
+          url: 'backend/handle-delivered.php',
+          type: 'POST',
+          data: formData,
+          contentType: false,
+          processData: false,
+          success: async function(response) {
+            if (response.success === true) {
+              // send message to telegram
+              const userShop = getUserInfoByEmail(response.data.createdBy);
+              const shipperInfo = getUserInfoByEmail(response.data.deliveryPersonId);
+              let telegramMessage = '';
+
+              telegramMessage = `**The Order Delivered!**\n` +
+                `Shipper: ${shipperInfo.fullname} - ${shipperInfo.phone}\n` +
+                `Order ID: ${response.data.idOrder}\n` +
+                `Item Name: ${response.data.itemName}\n` +
+                `Weight: ${response.data.weight} kg\n` +
+                `Customer: ${response.data.customerName}\n` +
+                `Address: ${response.data.address}\n` +
+                `Created At: ${response.data.createdAt}\n`;
+
+              // Gửi tin nhắn đến Telegram
+              await fetch('../../sendTelegram.php', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  message: telegramMessage,
+                  id_telegram: userShop.idTelegram // Truyền thêm thông tin operator_phone
+                })
+              });
+              Swal.fire({
+                position: "center",
+                icon: "success",
+                text: response.message,
+                showConfirmButton: false,
+                timer: 2000
+              }).then(() => {
+                // clear interval
+                if (locationInterval) {
+                  clearInterval(locationInterval);
+                }
+                // Reload page
+                location.reload();
+              });
+            } else {
+              Swal.close();
+              const modal = bootstrap.Modal.getInstance(document.getElementById('deliveredModal'));
+              modal.hide();
+              alert(response.message);
+            }
+          },
+          error: function() {
+            Swal.close();
+            const modal = bootstrap.Modal.getInstance(document.getElementById('deliveredModal'));
+            modal.hide();
+            alert('Error confirming delivered');
+          }
+        });
+      });
+
+      // Show image preview
+      document.getElementById('imageUpload').addEventListener('change', function(event) {
+        const files = event.target.files;
+        const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+        imagePreviewContainer.innerHTML = ''; // Clear previous previews
+
+        if (files.length > 0) {
+          Array.from(files).forEach(file => {
+            if (file.type.startsWith('image/')) { // Ensure it's an image file
+              const reader = new FileReader();
+              reader.onload = function(e) {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.classList.add('img-thumbnail');
+                img.style.maxWidth = '100px';
+                img.style.maxHeight = '100px';
+                img.style.objectFit = 'cover';
+                imagePreviewContainer.appendChild(img);
+              };
+              reader.readAsDataURL(file);
+            }
+          });
+        }
+      });
+
+
+      function getLocation() {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              console.log("Latitude:", position.coords.latitude);
+              console.log("Longitude:", position.coords.longitude);
+
+              // Send location to server
+              $.ajax({
+                url: 'backend/handle-location.php',
+                type: 'POST',
+                data: {
+                  id: '<?php echo $orderId; ?>',
+                  latitude: position.coords.latitude,
+                  longitude: position.coords.longitude
+                },
+                success: function(response) {
+                  // console.log("Location sent successfully");
+                },
+                error: function() {
+                  console.error("Error sending location");
+                }
+              });
+            },
+            (error) => {
+              console.error("Error getting location:", error.message);
+            }
+          );
+        } else {
+          console.error("Geolocation is not supported by this browser.");
+        }
+      }
+
+      // Call getLocation() immediately, then every 1 minute (60000 ms)
+      getLocation(); // First call immediately
+
+      if (orderData.status == "shipping") {
+        locationInterval = setInterval(getLocation, 60000);
+      }
+
+      // Cleanup interval when leaving the page
+      window.addEventListener('beforeunload', function() {
+        if (locationInterval) {
+          clearInterval(locationInterval);
+        }
       });
     });
   </script>

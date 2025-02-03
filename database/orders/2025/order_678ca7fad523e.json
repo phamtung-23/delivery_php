@@ -6,6 +6,7 @@
     "deliveryPersonId": "6783773fdbb27",
     "address": "a\u0301dfasf",
     "status": "waiting_shipper_accept",
+    "createdBy": "6783773fdbb25",
     "history": [
         {
             "status": "created",
